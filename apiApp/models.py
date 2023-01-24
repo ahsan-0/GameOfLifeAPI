@@ -69,3 +69,37 @@ def find_patterns_by_username(request, username, patterns_collection):
         list(patterns_collection.find({"username": username}))
     )
     return user_patterns
+
+def insert_pattern(request, patterns_collection):
+    request_body = request.data
+    allowed_keys = ("pattern_body", "pattern_name", "username")
+    username = request_body["username"]
+
+    try:
+        list(patterns_collection.find_one({"username": username }))
+    except:
+        return Response(
+            {"msg": "User does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    for key in request_body:
+        if key not in allowed_keys:
+            return Response({"msg": "Request body contains invalid key."},
+            status=status.HTTP_400_BAD_REQUEST)
+    
+    if not all(k in request_body for k in allowed_keys):
+        return Response({"msg": "Request body is missing a required key."}, 
+        status=status.HTTP_400_BAD_REQUEST)
+
+    for pattern in patterns_collection.find({}):
+        if all((pattern.get(key) == value for key, value in request_body.items())) == True:
+            return Response({"msg": "Item already exists in database."},
+            status=status.HTTP_400_BAD_REQUEST)
+    
+    request_body["created_at"] = datetime.now()
+    patterns_collection.insert_one(request_body)
+    new_pattern = MongoJSONEncoder().encode(list(patterns_collection.find({
+        "pattern_name": request_body["pattern_name"]
+    })))
+
+    return Response({ "pattern": json.loads(new_pattern)[0]}, status=status.HTTP_201_CREATED)

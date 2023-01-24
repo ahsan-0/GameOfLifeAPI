@@ -9,6 +9,7 @@ from apiApp.models import (
     find_users,
     find_single_user,
     find_patterns_by_username,
+    insert_pattern
 )
 import json
 
@@ -21,12 +22,15 @@ patterns_collection = db["patterns"]
 users_collection = db["users"]
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def get_patterns(request):
+  if request.method == 'GET':
     return Response(
         {"patterns": json.loads(find_patterns(request, patterns_collection))},
         status=status.HTTP_200_OK,
     )
+  elif request.method == 'POST':
+    return insert_pattern(request, patterns_collection)
 
 
 @api_view(["GET"])
