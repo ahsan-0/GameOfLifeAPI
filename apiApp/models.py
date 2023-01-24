@@ -12,9 +12,5 @@ class MongoJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 def find_patterns(request,pattern_collection):
-  # pattern_data = []
-  for pattern in list(pattern_collection.find({})):
-    print(pattern['created_at'].tostring())
-#pattern_data = MongoJSONEncoder().encode(list(pattern_collection.find({})))
-  # return pattern_data
-  # print(pattern_data)
+    pattern_data = MongoJSONEncoder().encode(list(pattern_collection.find({})))
+    return pattern_data
