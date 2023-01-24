@@ -10,7 +10,9 @@ from apiApp.models import (
     find_single_user,
     find_patterns_by_username,
     insert_pattern,
-    insert_user
+    insert_user,
+    update_pattern,
+    update_user,
 )
 import json
 
@@ -25,39 +27,43 @@ users_collection = db["users"]
 
 @api_view(["GET", "POST"])
 def get_patterns(request):
-  if request.method == 'GET':
-    return Response(
-        {"patterns": json.loads(find_patterns(request, patterns_collection))},
-        status=status.HTTP_200_OK,
-    )
-  elif request.method == 'POST':
-    return insert_pattern(request, patterns_collection)
+    if request.method == "GET":
+        return Response(
+            {"patterns": json.loads(find_patterns(request, patterns_collection))},
+            status=status.HTTP_200_OK,
+        )
+    elif request.method == "POST":
+        return insert_pattern(request, patterns_collection, users_collection)
 
 
-@api_view(["GET"])
-def get_single_pattern(request, id):
-    return Response(
-        json.loads(find_single_pattern(request, id, patterns_collection))[0]
-    )
+@api_view(["GET", "PUT"])
+def single_pattern(request, id):
+    if request.method == "GET":
+        return Response(
+            json.loads(find_single_pattern(request, id, patterns_collection))[0]
+        )
+    elif request.method == "PUT":
+        return update_pattern(request, id, patterns_collection)
 
 
 @api_view(["GET", "POST"])
 def get_users(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         return Response(
-            {"users": json.loads(find_users(request, users_collection))}, 
+            {"users": json.loads(find_users(request, users_collection))},
             status=status.HTTP_200_OK,
-            )
-    
-    elif request.method == 'POST':
+        )
+
+    elif request.method == "POST":
         return insert_user(request, users_collection)
 
 
-@api_view(["GET"])
-def get_single_user(request, username):
-    return Response(
-        json.loads(find_single_user(request, username, users_collection))[0]
-    )
+@api_view(["GET", "PUT"])
+def get_single_user(request, id):
+    if request.method == "GET":
+        return Response(json.loads(find_single_user(request, id, users_collection))[0])
+    elif request.method == "PUT":
+        return update_user(request, id, users_collection, patterns_collection)
 
 
 @api_view(["GET"])
@@ -65,7 +71,7 @@ def get_patterns_by_username(request, username):
     return Response(
         {
             "patterns": json.loads(
-                find_patterns_by_username(request, username, patterns_collection)
+                find_patterns_by_username(username, patterns_collection)
             )
         },
         status=status.HTTP_200_OK,
