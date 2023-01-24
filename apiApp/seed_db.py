@@ -1,4 +1,4 @@
-from dev_data import patterns
+from dev_data import patterns, users
 from pymongo import MongoClient
 
 
@@ -11,4 +11,8 @@ def seed_db():
     patterns_collection.drop()
     patterns_collection.insert_many(patterns)
     
+    users_collection = db['users']
+    users_collection.drop()
+    users_collection.insert_many(users)
+
 seed_db()
