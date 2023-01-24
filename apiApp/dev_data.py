@@ -1,30 +1,35 @@
 from datetime import datetime
+
 patterns = [
     {
-        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [1, 1, 1, 1]],
-        "pattern_name": "seaboat",
         "username": "john123",
-        'created_at':datetime.now()
+        "pattern_name": "seaboat",
+        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [1, 1, 1, 1]],
+        "created_at": datetime.now(),
     },
     {
-        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 0, 0, 1]],
-        "pattern_name": "airplane",
         "username": "bob12",
+        "pattern_name": "airplane",
+        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 0, 0, 1]],
+        "created_at": datetime.now()
     },
     {
-        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [1, 1, 1, 0]],
-        "pattern_name": "lumberjack",
         "username": "andy09",
+        "pattern_name": "lumberjack",
+        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [1, 1, 1, 0]],
+        "created_at": datetime.now()
     },
     {
-        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 1, 0, 1]],
-        "pattern_name": "fisherman",
         "username": "zack81",
+        "pattern_name": "fisherman",
+        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 1, 0, 1]],
+        "created_at": datetime.now()
     },
     {
-        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 0, 1, 1]],
-        "pattern_name": "python",
         "username": "mark123",
+        "pattern_name": "python",
+        "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 0, 1, 1]],
+        "created_at": datetime.now()
     },
 ]
 
