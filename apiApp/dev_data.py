@@ -1,10 +1,10 @@
-import datetime
+from datetime import datetime
 patterns = [
     {
         "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [1, 1, 1, 1]],
         "pattern_name": "seaboat",
         "username": "john123",
-        'created_at':datetime.datetime.utcnow()
+        'created_at':datetime.now()
     },
     {
         "pattern_body": [[0, 1, 0, 1], [1, 1, 0, 1], [0, 1, 1, 0], [0, 0, 0, 1]],
