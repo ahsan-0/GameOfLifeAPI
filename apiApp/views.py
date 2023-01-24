@@ -9,7 +9,8 @@ from apiApp.models import (
     find_users,
     find_single_user,
     find_patterns_by_username,
-    insert_pattern
+    insert_pattern,
+    insert_user
 )
 import json
 
@@ -40,12 +41,16 @@ def get_single_pattern(request, id):
     )
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def get_users(request):
-    return Response(
-        {"users": json.loads(find_users(request, users_collection))},
-        status=status.HTTP_200_OK,
-    )
+    if request.method == 'GET':
+        return Response(
+            {"users": json.loads(find_users(request, users_collection))}, 
+            status=status.HTTP_200_OK,
+            )
+    
+    elif request.method == 'POST':
+        return insert_user(request, users_collection)
 
 
 @api_view(["GET"])
