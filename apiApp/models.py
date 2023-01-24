@@ -93,7 +93,7 @@ def insert_pattern(request, patterns_collection):
 
     for pattern in patterns_collection.find({}):
         if all((pattern.get(key) == value for key, value in request_body.items())) == True:
-            return Response({"msg": "Item already exists in database."},
+            return Response({"msg": "Pattern already exists in database."},
             status=status.HTTP_400_BAD_REQUEST)
     
     request_body["created_at"] = datetime.now()
@@ -103,3 +103,29 @@ def insert_pattern(request, patterns_collection):
     })))
 
     return Response({ "pattern": json.loads(new_pattern)[0]}, status=status.HTTP_201_CREATED)
+
+
+def insert_user(request, users_collection):
+    request_body = request.data
+    allowed_keys = ("account_owner", "username", "email", "avatar_url")
+
+    for key in request_body:
+        if key not in allowed_keys:
+            return Response({"msg": "Request body contains invalid key."},
+            status=status.HTTP_400_BAD_REQUEST)
+    
+    if not all(k in request_body for k in allowed_keys):
+        return Response({"msg": "Request body is missing a required key."}, 
+        status=status.HTTP_400_BAD_REQUEST)
+
+    for user in users_collection.find({}):
+        if all((user.get(key) == value for key, value in request_body.items())) == True:
+            return Response({"msg": "User already exists in database."},
+            status=status.HTTP_400_BAD_REQUEST)
+    
+    users_collection.insert_one(request_body)
+    new_user = MongoJSONEncoder().encode(list(users_collection.find({
+        "username": request_body["username"]
+    })))
+
+    return Response({ "user": json.loads(new_user)[0]}, status=status.HTTP_201_CREATED)
