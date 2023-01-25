@@ -14,5 +14,3 @@ def seed_test_db():
     users_collection = db['users_test']
     users_collection.drop()
     users_collection.insert_many(users)
-
-seed_test_db()
