@@ -16,15 +16,14 @@ from apiApp.models import (
     delete_items
 )
 import json
-from apiApp.endpoints import endpoints
 
 # Create your views here.
 client = MongoClient(
     "mongodb+srv://GNA7R:eerDKGruC7PUqjyx@rootcluster.i0un9uw.mongodb.net/?retryWrites=true&w=majority"
 )
 db = client["multiply_till_you_die_db"]
-patterns_collection = db["patterns"]
-users_collection = db["users"]
+patterns_collection = db["patterns_test"]
+users_collection = db["users_test"]
 
 
 @api_view(["GET", "POST"])
@@ -71,6 +70,3 @@ def get_single_user(request, id):
 @api_view(["GET"])
 def get_patterns_by_username(request, username):
     return find_patterns_by_username(username, patterns_collection, users_collection)
-
-@api_view(["GET"])
-def api_endpoints(request): return Response(endpoints)
