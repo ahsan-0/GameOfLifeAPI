@@ -13,6 +13,7 @@ from apiApp.models import (
     insert_user,
     update_pattern,
     update_user,
+    delete_items
 )
 import json
 
@@ -42,6 +43,8 @@ def single_pattern(request, id):
         return find_single_pattern(request, id, patterns_collection)
     elif request.method == "PUT":
         return update_pattern(request, id, patterns_collection)
+    elif request.method == 'DELETE':
+        return delete_items(id,patterns_collection)
 
 
 @api_view(["GET", "POST"])
@@ -51,17 +54,17 @@ def get_users(request):
             {"users": json.loads(find_users(request, users_collection))},
             status=status.HTTP_200_OK,
         )
-
     elif request.method == "POST":
         return insert_user(request, users_collection)
 
-
-@api_view(["GET", "PUT"])
+@api_view(["GET", "PUT", 'DELETE'])
 def get_single_user(request, id):
     if request.method == "GET":
-        return Response(json.loads(find_single_user(request, id, users_collection))[0])
+        return find_single_user(id, users_collection)
     elif request.method == "PUT":
         return update_user(request, id, users_collection, patterns_collection)
+    elif request.method == 'DELETE':
+        return delete_items(id,users_collection)
 
 
 @api_view(["GET"])
