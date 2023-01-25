@@ -39,9 +39,7 @@ def get_patterns(request):
 @api_view(["GET", "PUT"])
 def single_pattern(request, id):
     if request.method == "GET":
-        return Response(
-            json.loads(find_single_pattern(request, id, patterns_collection))[0]
-        )
+        return find_single_pattern(request, id, patterns_collection)
     elif request.method == "PUT":
         return update_pattern(request, id, patterns_collection)
 
@@ -68,11 +66,5 @@ def get_single_user(request, id):
 
 @api_view(["GET"])
 def get_patterns_by_username(request, username):
-    return Response(
-        {
-            "patterns": json.loads(
-                find_patterns_by_username(username, patterns_collection)
-            )
-        },
-        status=status.HTTP_200_OK,
-    )
+    return find_patterns_by_username(username, patterns_collection, users_collection)
+

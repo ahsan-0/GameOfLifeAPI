@@ -22,17 +22,17 @@ def find_patterns(request, pattern_collection):
 
 def find_single_pattern(request, id, pattern_collection):
     try:
-        list(pattern_collection.find_one({"_id": ObjectId(id)}))
+        pattern_collection.find_one({"_id": ObjectId(id)})
     except:
         return Response(
             {"msg": "Request contains invalid id."}, status=status.HTTP_404_NOT_FOUND
         )
-
+    
     if request.method == "GET":
         pattern = MongoJSONEncoder().encode(
             list(pattern_collection.find({"_id": ObjectId(id)}))
         )
-        return pattern
+        return Response(json.loads(pattern)[0], status=status.HTTP_200_OK)
 
 
 def find_users(request, users_collection):
@@ -56,32 +56,30 @@ def find_single_user(request, id, users_collection):
         return user
 
 
-def find_patterns_by_username(username, patterns_collection):
-    try:
-        list(patterns_collection.find_one({"username": username}))
-    except:
-        return Response(
-            {"msg": "Request contains invalid username."},
-            status=status.HTTP_404_NOT_FOUND,
-        )
+def find_patterns_by_username(username, patterns_collection, users_collection):
+    if users_collection.find_one({"username": username}) is None:
+        return Response({"msg": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
+    
+    if patterns_collection.find_one({"username": username}) is None:
+        return Response({"msg": "There are no patterns for that user."}, status=status.HTTP_404_NOT_FOUND)
+
+
     user_patterns = MongoJSONEncoder().encode(
         list(patterns_collection.find({"username": username}))
     )
-    return user_patterns
+    return Response({"patterns": json.loads(user_patterns)}, status=status.HTTP_200_OK)
 
 
 def insert_pattern(request, patterns_collection, users_collection):
     request_body = request.data
     allowed_keys = ("pattern_body", "pattern_name", "username")
     username = request_body["username"]
-    print(request_body)
-    print(username)
-    try:
-        list(users_collection.find_one({"username": username}))
-    except:
+    
+    if users_collection.find_one({"username": username}) is None:
         return Response(
             {"msg": "User does not exist."}, status=status.HTTP_404_NOT_FOUND
         )
+    
     for key in request_body:
         if key not in allowed_keys:
             return Response(
@@ -108,7 +106,7 @@ def insert_pattern(request, patterns_collection, users_collection):
     request_body["created_at"] = datetime.now()
     patterns_collection.insert_one(request_body)
     new_pattern = MongoJSONEncoder().encode(
-        list(patterns_collection.find({"pattern_name": request_body["pattern_name"]}))
+        list(patterns_collection.find({"pattern_name": request_body["pattern_name"], "username": username}))
     )
 
     return Response(
@@ -148,6 +146,13 @@ def insert_user(request, users_collection):
 
 
 def update_pattern(request, id, patterns_collection):
+    try:
+        patterns_collection.find_one({"_id": ObjectId(id)})
+    except:
+        return Response(
+            {"msg": "Request contains invalid id."}, status=status.HTTP_404_NOT_FOUND
+        )
+    
     request_body = request.data
     if bool(request_body) == False:
         return Response(
@@ -170,13 +175,22 @@ def update_user(request, id, users_collection, patterns_collection):
         key: value for key, value in request.data.items() if value is not None
     }
     allowed_keys = ("account_owner", "username", "email", "avatar_url")
+    
     try:
-        list(users_collection.find_one({"_id": ObjectId(id)}))
+        users_collection.find_one({"_id": ObjectId(id)})
     except:
         return Response(
             {"msg": "Request contains invalid id."},
             status=status.HTTP_404_NOT_FOUND,
         )
+    
+    username = request_body.get('username', 'x')
+    if " " in username:
+        return Response(
+                {"msg": "Username cannot contain spaces."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
     for key in request_body:
         if key not in allowed_keys:
             return Response(
@@ -185,7 +199,7 @@ def update_user(request, id, users_collection, patterns_collection):
             )
     if bool(request_body) == False:
         return Response({"msg": "Request cannot be an empty object"})
-    users_collection.update_one({"_id": ObjectId(id)}, {"$set": request_body})
+
 
     old_usernames = []
     curr_usernames = []
@@ -193,13 +207,18 @@ def update_user(request, id, users_collection, patterns_collection):
         old_usernames.append(patterns["username"])
     for users in users_collection.find({}):
         curr_usernames.append(users["username"])
+
     updated_username = [k for k in old_usernames if k not in curr_usernames]
-    patterns_collection.update_many(
-        {"username": updated_username[0]}, {"$set": request_body}
-    )
-    updated_user = MongoJSONEncoder().encode(
-        list(users_collection.find({"_id": ObjectId(id)}))
-    )
+   
+    users_collection.update_one({"_id": ObjectId(id)}, {"$set": request_body})
+
+    if len(updated_username) != 0:
+        patterns_collection.update_many({"username": updated_username[0]}, {"$set": request_body})
+
+    updated_user = MongoJSONEncoder().encode(list(users_collection.find({"_id": ObjectId(id)})))
+    
     return Response(
         {"updated_user": json.loads(updated_user)[0]}, status=status.HTTP_202_ACCEPTED
     )
+
+    
