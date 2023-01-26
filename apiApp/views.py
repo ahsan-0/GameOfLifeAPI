@@ -74,3 +74,11 @@ def get_patterns_by_username(request, username):
 
 @api_view(["GET"])
 def api_endpoints(request): return Response(endpoints)
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def handler404(request, exception):
+    return Response({"msg": "HTTP 404: not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def handler500(arg):
+    return Response({"msg": "Internal server error."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
