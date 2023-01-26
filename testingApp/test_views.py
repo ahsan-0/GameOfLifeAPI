@@ -37,7 +37,7 @@ def get_patterns(request):
         return insert_pattern(request, patterns_collection, users_collection)
 
 
-@api_view(["GET", "PUT"])
+@api_view(["GET", "PUT",'DELETE'])
 def single_pattern(request, id):
     if request.method == "GET":
         return find_single_pattern(request, id, patterns_collection)
