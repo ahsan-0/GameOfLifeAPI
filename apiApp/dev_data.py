@@ -136,5 +136,11 @@ users = [
         "username": "lornBG",
         "email": "blawn1923@outlook.com",
         "avatar_url": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpixabay.com%2Fimages%2Fsearch%2Fus[…]e=images&cd=vfe&ved=0CA4QjRxqFwoTCLDL1Z2B4PwCFQAAAAAdAAAAABAE",
+    },
+    {
+        "account_owner": "Brick man",
+        "username": "BM",
+        "email": "bricklayer1923@outlook.com",
+        "avatar_url": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpixabay.com%2Fimages%2Fsearch%2Fus[…]e=images&cd=vfe&ved=0CA4QjRxqFwoTCLDL1Z2B4PwCFQAAAAAdAAAAABAE",
     }
 ]
