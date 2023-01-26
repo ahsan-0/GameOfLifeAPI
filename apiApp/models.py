@@ -23,6 +23,8 @@ def find_patterns(request, pattern_collection):
 def find_single_pattern(request, id, pattern_collection):
     try:
         pattern_collection.find_one({"_id": ObjectId(id)})
+        if len(list(pattern_collection.find({"_id": ObjectId(id)}))) == 0:
+            raise Exception
     except:
         return Response(
             {"msg": "Request contains invalid id."}, status=status.HTTP_404_NOT_FOUND
@@ -40,14 +42,16 @@ def find_users(request, users_collection):
 
 
 def find_single_user(id, users_collection):
-    user = MongoJSONEncoder().encode(list(users_collection.find({"_id": ObjectId(id)})))
-    if len(list(users_collection.find({"_id": ObjectId(id)}))) == 0:
+    try:
+        users_collection.find_one({"_id": ObjectId(id)})
+        if len(list(users_collection.find({"_id": ObjectId(id)}))) == 0:
+            raise Exception
+    except:
         return Response(
-            {"msg": "Request contains invalid id."},
-            status=status.HTTP_404_NOT_FOUND,
+            {"msg": "Request contains invalid id."}, status=status.HTTP_404_NOT_FOUND
         )
-    else:
-        return Response(json.loads(user)[0], status=status.HTTP_200_OK)
+    user = MongoJSONEncoder().encode(list(users_collection.find({"_id": ObjectId(id)})))
+    return Response(json.loads(user)[0], status=status.HTTP_200_OK)
 
 
 def find_patterns_by_username(username, patterns_collection, users_collection):
@@ -104,8 +108,15 @@ def insert_pattern(request, patterns_collection, users_collection):
     request_body["created_at"] = datetime.now()
     patterns_collection.insert_one(request_body)
     new_pattern = MongoJSONEncoder().encode(
-        list(patterns_collection.find({"pattern_name": request_body["pattern_name"], "username": username})))
-    return Response({"pattern": json.loads(new_pattern)[0]}, status=status.HTTP_201_CREATED)
+        list(
+            patterns_collection.find(
+                {"pattern_name": request_body["pattern_name"], "username": username}
+            )
+        )
+    )
+    return Response(
+        {"pattern": json.loads(new_pattern)[0]}, status=status.HTTP_201_CREATED
+    )
 
 
 def insert_user(request, users_collection):
@@ -130,6 +141,11 @@ def insert_user(request, users_collection):
                 {"msg": "User already exists in database."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        elif user["username"] == request_body["username"]:
+            return Response(
+                {"msg": "That username is already taken."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     users_collection.insert_one(request_body)
     new_user = MongoJSONEncoder().encode(
@@ -142,18 +158,24 @@ def insert_user(request, users_collection):
 def update_pattern(request, id, patterns_collection):
     try:
         patterns_collection.find_one({"_id": ObjectId(id)})
+        if len(list(patterns_collection.find({"_id": ObjectId(id)}))) == 0:
+            raise Exception
     except:
         return Response(
             {"msg": "Request contains invalid id."}, status=status.HTTP_404_NOT_FOUND
         )
-
     request_body = request.data
     if bool(request_body) == False:
         return Response(
             {"msg": "Request body cannot be empty"}, status=status.HTTP_400_BAD_REQUEST
         )
     elif bool(request_body.get("pattern_name")) == False:
-        return Response({"msg": "invalid property"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"msg": "Request is missing required property"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    elif len(request_body) > 1:
+        return Response({"msg": "Request contains invalid property."},status=status.HTTP_400_BAD_REQUEST)
     patterns_collection.update_one({"_id": ObjectId(id)}, {"$set": request_body})
     updated_pattern = MongoJSONEncoder().encode(
         list(patterns_collection.find({"_id": ObjectId(id)}))
@@ -169,9 +191,10 @@ def update_user(request, id, users_collection, patterns_collection):
         key: value for key, value in request.data.items() if value is not None
     }
     allowed_keys = ("account_owner", "username", "email", "avatar_url")
-
     try:
         users_collection.find_one({"_id": ObjectId(id)})
+        if len(list(users_collection.find({"_id": ObjectId(id)}))) == 0:
+            raise Exception
     except:
         return Response(
             {"msg": "Request contains invalid id."},
@@ -192,7 +215,10 @@ def update_user(request, id, users_collection, patterns_collection):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     if bool(request_body) == False:
-        return Response({"msg": "Request cannot be an empty object"})
+        return Response(
+            {"msg": "Request cannot be an empty object"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     old_usernames = []
     curr_usernames = []
@@ -220,6 +246,13 @@ def update_user(request, id, users_collection, patterns_collection):
 
 
 def delete_items(id, collection):
+    try:
+        collection.find_one({"_id": ObjectId(id)})
+    except:
+        return Response(
+            {"msg": "Request contains invalid id."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
     if collection.find_one({"_id": ObjectId(id)}) is None:
         return Response(
             {"msg": "Request contains invalid id."},
