@@ -5,7 +5,6 @@ from datetime import datetime
 from rest_framework.response import Response
 from rest_framework import status
 
-# Create your models here.
 class MongoJSONEncoder(json.JSONEncoder):
     def default(self, o: Any) -> Any:
         if isinstance(o, ObjectId):
