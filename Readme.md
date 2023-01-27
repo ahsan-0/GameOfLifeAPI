@@ -5,11 +5,11 @@ An API create using Django Rest Framework and Pymongo
 
 Once you have forked and cloned the repo you will need to run the following commands:
 
-# `virtualenv env & source env/bin/activate` 
+## `virtualenv env & source env/bin/activate` 
 
 Installs a virtual environment and then activates virtual environment
 
-# `pip install -r requirements.txt`
+## `pip install -r requirements.txt`
 
 Installs dependencies
 
