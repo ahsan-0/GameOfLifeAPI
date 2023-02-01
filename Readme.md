@@ -9,13 +9,13 @@ Once you have forked and cloned the repo you will need to run the following comm
 
 Installs a virtual environment and then activates virtual environment
 
-###`pip install -r requirements.txt`
+### `pip install -r requirements.txt`
 
 Installs dependencies
 
 ## Run Server
 
-###`python manage.py runserver`
+### `python manage.py runserver`
 
 runs a local server on your machine
 
