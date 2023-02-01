@@ -120,7 +120,7 @@ def insert_pattern(request, patterns_collection, users_collection):
 
 def insert_user(request, users_collection):
     request_body = request.data
-    allowed_keys = ("account_owner", "username", "email", "avatar_url")
+    allowed_keys = ("account_owner", "username", "email", "avatar_url", "firebase_uid", "score")
     for key in request_body:
         if key not in allowed_keys:
             return Response(
