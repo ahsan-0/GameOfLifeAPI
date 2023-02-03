@@ -23,12 +23,9 @@ import urllib.parse
 from dotenv import load_dotenv
 load_dotenv()
 
-username_env = str(os.getenv('MONGO_USERNAME'))
-password_env = str(os.getenv('MONGO_PASSWORD'))
+mongo_uri = str(os.getenv('MONGO_URI'))
+client = MongoClient(mongo_uri)
 
-username = urllib.parse.quote_plus(username_env)
-password = urllib.parse.quote_plus(password_env)
-client = MongoClient('mongodb+srv://%s:%s@rootcluster.i0un9uw.mongodb.net/' % (username, password))
 db = client["multiply_till_you_die_db"]
 patterns_collection = db["patterns"]
 users_collection = db["users"]
