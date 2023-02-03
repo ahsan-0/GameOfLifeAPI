@@ -18,15 +18,23 @@ from apiApp.models import (
 import json
 from apiApp.endpoints import endpoints
 
-# Create your views here.
-client = MongoClient(
-    "mongodb+srv://GNA7R:eerDKGruC7PUqjyx@rootcluster.i0un9uw.mongodb.net/?retryWrites=true&w=majority"
-)
+import os
+import urllib.parse 
+from dotenv import load_dotenv
+load_dotenv()
+
+username_env = str(os.getenv('MONGO_USERNAME'))
+password_env = str(os.getenv('MONGO_PASSWORD'))
+
+username = urllib.parse.quote_plus(username_env)
+password = urllib.parse.quote_plus(password_env)
+client = MongoClient('mongodb+srv://%s:%s@rootcluster.i0un9uw.mongodb.net/' % (username, password))
 db = client["multiply_till_you_die_db"]
 patterns_collection = db["patterns"]
 users_collection = db["users"]
 
 
+# Create your views here.
 @api_view(["GET", "POST"])
 def get_patterns(request):
     if request.method == "GET":
