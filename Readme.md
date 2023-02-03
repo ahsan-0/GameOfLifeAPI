@@ -1,5 +1,5 @@
 # GameOfLife Backend API
-An API create using Django Rest Framework and Pymongo 
+An API created using Django Rest Framework along with Pymong and MongoDB. It is hosted using Microsoft Azure  
 
 ## SETUP
 
