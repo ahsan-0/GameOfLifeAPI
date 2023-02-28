@@ -1,7 +1,7 @@
 # GameOfLife Backend API
-An API created using Django Rest Framework along with Pymong and MongoDB. It is hosted using Microsoft Azure  
+An API created using Django Rest Framework along with Pymong and MongoDB. 
 
-https://automatrix-app.azurewebsites.net
+
 
 ## SETUP
 
